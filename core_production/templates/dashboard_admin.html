@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Penerima Order</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f4f6f9; }
+        .card-header { background-color: #34495e; color: white; }
+        .status-badge { font-size: 0.85em; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-dark bg-dark mb-4">
+    <div class="container-fluid">
+        <span class="navbar-brand mb-0 h1">📚 Sistem Penerbitan - Divisi Penerima Order</span>
+        <div class="d-flex align-items-center text-white">
+            <span class="me-3">Halo, {{ user.username }}</span>
+            <a href="{% url 'logout' %}" class="btn btn-outline-light btn-sm">Keluar</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid px-4">
+    
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4>Daftar Pesanan Masuk</h4>
+        <a href="/admin/core_production/order/add/" class="btn btn-primary" target="_blank">
+            + Input Order Baru
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header">
+            Rekapitulasi Order
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>No. Order</th>
+                            <th>Judul Buku</th>
+                            <th>Pemesan</th>
+                            <th>Deadline</th>
+                            <th>Status Global</th>
+                            <th>Posisi Produksi</th>
+                            <th>Total Harga</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                        <tr>
+                            <td class="fw-bold">{{ order.nomor_order }}</td>
+                            <td>{{ order.judul_buku }}</td>
+                            <td>{{ order.nama_pemesan }}</td>
+                            
+                            <td>
+                                <span class="{% if order.deadline < now and order.status_global != 'SIAP' %}text-danger fw-bold{% endif %}">
+                                    {{ order.deadline|date:"d M Y" }}
+                                </span>
+                            </td>
+
+                            <td>
+                                {% if order.status_global == 'BARU' %}
+                                    <span class="badge bg-info text-dark">Baru</span>
+                                {% elif order.status_global == 'PROSES' %}
+                                    <span class="badge bg-warning text-dark">Proses</span>
+                                {% elif order.status_global == 'SIAP' %}
+                                    <span class="badge bg-success">Siap</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Batal</span>
+                                {% endif %}
+                            </td>
+
+                            <td class="small">
+                                <div>Layout: <b>{{ order.workflow.get_status_layout_display }}</b></div>
+                                <div>Cetak: <b>{{ order.workflow.get_status_cetak_display }}</b></div>
+                            </td>
+
+                            <td class="fw-bold text-success">
+                                Rp {{ order.total_harga }}
+                            </td>
+
+                            <td>
+                                <a href="/admin/core_production/order/{{ order.id }}/change/" class="btn btn-sm btn-outline-primary" target="_blank">Detail/Edit</a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="text-center py-4 text-muted">Belum ada order masuk.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
