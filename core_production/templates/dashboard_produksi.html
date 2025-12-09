@@ -1,105 +1,77 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Area Produksi</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body { background-color: #e9ecef; }
-        .card-header { background-color: #c0392b; color: white; } /* Merah Bata */
-        .spec-box { font-size: 0.9em; border-left: 3px solid #c0392b; padding-left: 8px; background: #fff; }
-    </style>
-</head>
-<body>
+{% extends 'base.html' %}
 
-<nav class="navbar navbar-dark bg-danger mb-4 shadow">
-    <div class="container-fluid">
-        <span class="navbar-brand mb-0 h1">🏭 DIVISI PRODUKSI</span>
-        <div class="d-flex align-items-center text-white">
-            <span class="me-3">Operator: {{ user.username }}</span>
-            <a href="{% url 'logout' %}" class="btn btn-sm btn-light text-danger fw-bold">Logout</a>
+{% block title %}Area Produksi{% endblock %}
+
+{% block content %}
+<div class="bg-red-800 text-white -m-6 mb-6 p-6 shadow-md">
+    <h2 class="text-2xl font-bold uppercase tracking-wide">🏭 SPK - Divisi Produksi</h2>
+    <p class="opacity-80 text-sm mt-1">Hanya fokus pada spek teknis. Harga disembunyikan.</p>
+</div>
+
+<div class="grid gap-6">
+    {% for order in orders %}
+    <div class="bg-white rounded-lg shadow border-l-4 {% if order.workflow.status_cetak == 'SELESAI' %}border-green-500{% else %}border-red-500{% endif %} overflow-hidden">
+        
+        <div class="bg-gray-50 p-4 border-b border-gray-100 flex justify-between items-start">
+            <div>
+                <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Nomor Order</span>
+                <h3 class="text-xl font-bold text-slate-800">{{ order.nomor_order }}</h3>
+            </div>
+            <div class="text-right">
+                <span class="text-xs font-bold text-gray-400 uppercase">Judul Buku</span>
+                <p class="text-lg font-semibold text-slate-700">{{ order.judul_buku }}</p>
+            </div>
         </div>
-    </div>
-</nav>
 
-<div class="container-fluid px-4">
-    <div class="card shadow">
-        <div class="card-header fw-bold">
-            SPK (Surat Perintah Kerja) - Antrian
+        <div class="p-4 grid md:grid-cols-2 gap-4">
+            <div class="space-y-2">
+                <div class="flex justify-between border-b border-gray-100 py-1">
+                    <span class="text-gray-500 text-sm">Ukuran</span>
+                    <span class="font-bold text-slate-800">{{ order.spesifikasi.ukuran_buku }}</span>
+                </div>
+                <div class="flex justify-between border-b border-gray-100 py-1">
+                    <span class="text-gray-500 text-sm">Sampul</span>
+                    <span class="font-bold text-slate-800">{{ order.spesifikasi.get_jenis_sampul_display }}</span>
+                </div>
+                <div class="flex justify-between border-b border-gray-100 py-1">
+                    <span class="text-gray-500 text-sm">Laminasi</span>
+                    <span class="font-bold text-slate-800">{{ order.spesifikasi.get_laminasi_display }}</span>
+                </div>
+            </div>
+            
+            <div class="bg-yellow-50 p-3 rounded border border-yellow-200">
+                <p class="text-xs font-bold text-yellow-800 uppercase mb-1">Catatan Produksi:</p>
+                <p class="text-sm text-yellow-900 italic">
+                    {{ order.spesifikasi.catatan_teknis|default:"Tidak ada catatan khusus." }}
+                </p>
+            </div>
         </div>
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-bordered table-hover mb-0 align-middle">
-                    <thead class="table-secondary text-center">
-                        <tr>
-                            <th width="5%">No</th>
-                            <th width="20%">Judul Buku</th>
-                            <th width="30%">Spesifikasi Teknis (Wajib Cek)</th>
-                            <th width="10%">Layout</th>
-                            <th width="10%">Cetak</th>
-                            <th width="10%">Binding</th>
-                            <th width="10%">Finishing</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for order in orders %}
-                        <tr>
-                            <td class="text-center fw-bold">{{ order.nomor_order }}</td>
-                            <td>
-                                <div class="fw-bold">{{ order.judul_buku }}</div>
-                                <small class="text-muted">Deadline: {{ order.deadline }}</small>
-                            </td>
-                            
-                            <td class="bg-light">
-                                <div class="spec-box mb-1">
-                                    <strong>Ukuran:</strong> {{ order.spesifikasi.ukuran_buku }}
-                                </div>
-                                <div class="spec-box mb-1">
-                                    <strong>Cover:</strong> {{ order.spesifikasi.get_jenis_sampul_display }} 
-                                    ({{ order.spesifikasi.get_laminasi_display }})
-                                </div>
-                                <div class="spec-box">
-                                    <strong>Catatan:</strong> 
-                                    <em class="text-danger">{{ order.spesifikasi.catatan_teknis|default:"-" }}</em>
-                                </div>
-                            </td>
 
-                            <td class="text-center">
-                                {% if order.workflow.status_layout == 'ACC' %}
-                                    <span class="badge bg-success">SIAP CETAK</span>
-                                {% else %}
-                                    <span class="badge bg-warning text-dark">Tunggu Layout</span>
-                                {% endif %}
-                            </td>
+        <div class="bg-gray-100 p-3 flex justify-around items-center text-center">
+            
+            <div class="flex flex-col">
+                <span class="text-[10px] uppercase text-gray-500 font-bold">File Layout</span>
+                {% if order.workflow.status_layout == 'ACC' %}
+                    <span class="text-green-600 font-bold text-sm">✅ SIAP CETAK</span>
+                {% else %}
+                    <span class="text-red-500 font-bold text-sm animate-pulse">⏳ TUNGGU</span>
+                {% endif %}
+            </div>
 
-                            <td class="text-center">
-                                <span class="badge {% if order.workflow.status_cetak == 'SELESAI' %}bg-primary{% else %}bg-secondary{% endif %}">
-                                    {{ order.workflow.get_status_cetak_display }}
-                                </span>
-                            </td>
-                            <td class="text-center">
-                                <span class="badge {% if order.workflow.status_binding == 'SELESAI' %}bg-primary{% else %}bg-secondary{% endif %}">
-                                    {{ order.workflow.get_status_binding_display }}
-                                </span>
-                            </td>
-                            <td class="text-center">
-                                <span class="badge {% if order.workflow.status_finishing == 'SELESAI' %}bg-primary{% else %}bg-secondary{% endif %}">
-                                    {{ order.workflow.get_status_finishing_display }}
-                                </span>
-                            </td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="7" class="text-center py-4 text-muted">Mesin dingin. Belum ada kerjaan.</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+            <div class="h-8 w-px bg-gray-300"></div>
+
+            <div class="space-x-2">
+                <span class="px-3 py-1 rounded text-xs font-bold {% if order.workflow.status_cetak == 'SELESAI' %}bg-blue-600 text-white{% else %}bg-gray-300 text-gray-500{% endif %}">
+                    CETAK: {{ order.workflow.get_status_cetak_display }}
+                </span>
+                <span class="px-3 py-1 rounded text-xs font-bold {% if order.workflow.status_binding == 'SELESAI' %}bg-blue-600 text-white{% else %}bg-gray-300 text-gray-500{% endif %}">
+                    BINDING: {{ order.workflow.get_status_binding_display }}
+                </span>
             </div>
         </div>
     </div>
+    {% empty %}
+    <div class="text-center py-10 text-gray-400">Tidak ada SPK aktif.</div>
+    {% endfor %}
 </div>
-
-</body>
-</html>
+{% endblock %}

@@ -1,105 +1,78 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Penerima Order</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body { background-color: #f4f6f9; }
-        .card-header { background-color: #34495e; color: white; }
-        .status-badge { font-size: 0.85em; }
-    </style>
-</head>
-<body>
+{% extends 'base.html' %}
 
-<nav class="navbar navbar-dark bg-dark mb-4">
-    <div class="container-fluid">
-        <span class="navbar-brand mb-0 h1">📚 Sistem Penerbitan - Divisi Penerima Order</span>
-        <div class="d-flex align-items-center text-white">
-            <span class="me-3">Halo, {{ user.username }}</span>
-            <a href="{% url 'logout' %}" class="btn btn-outline-light btn-sm">Keluar</a>
-        </div>
+{% block title %}Dashboard Penerima Order{% endblock %}
+
+{% block content %}
+<div class="mb-8 flex justify-between items-center">
+    <div>
+        <h2 class="text-3xl font-bold text-slate-800">Dashboard Order</h2>
+        <p class="text-gray-500">Pantau semua pesanan masuk dan status produksi.</p>
     </div>
-</nav>
-
-<div class="container-fluid px-4">
-    
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h4>Daftar Pesanan Masuk</h4>
-        <a href="/admin/core_production/order/add/" class="btn btn-primary" target="_blank">
-            + Input Order Baru
-        </a>
-    </div>
-
-    <div class="card shadow-sm">
-        <div class="card-header">
-            Rekapitulasi Order
-        </div>
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover table-striped mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th>No. Order</th>
-                            <th>Judul Buku</th>
-                            <th>Pemesan</th>
-                            <th>Deadline</th>
-                            <th>Status Global</th>
-                            <th>Posisi Produksi</th>
-                            <th>Total Harga</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for order in orders %}
-                        <tr>
-                            <td class="fw-bold">{{ order.nomor_order }}</td>
-                            <td>{{ order.judul_buku }}</td>
-                            <td>{{ order.nama_pemesan }}</td>
-                            
-                            <td>
-                                <span class="{% if order.deadline < now and order.status_global != 'SIAP' %}text-danger fw-bold{% endif %}">
-                                    {{ order.deadline|date:"d M Y" }}
-                                </span>
-                            </td>
-
-                            <td>
-                                {% if order.status_global == 'BARU' %}
-                                    <span class="badge bg-info text-dark">Baru</span>
-                                {% elif order.status_global == 'PROSES' %}
-                                    <span class="badge bg-warning text-dark">Proses</span>
-                                {% elif order.status_global == 'SIAP' %}
-                                    <span class="badge bg-success">Siap</span>
-                                {% else %}
-                                    <span class="badge bg-secondary">Batal</span>
-                                {% endif %}
-                            </td>
-
-                            <td class="small">
-                                <div>Layout: <b>{{ order.workflow.get_status_layout_display }}</b></div>
-                                <div>Cetak: <b>{{ order.workflow.get_status_cetak_display }}</b></div>
-                            </td>
-
-                            <td class="fw-bold text-success">
-                                Rp {{ order.total_harga }}
-                            </td>
-
-                            <td>
-                                <a href="/admin/core_production/order/{{ order.id }}/change/" class="btn btn-sm btn-outline-primary" target="_blank">Detail/Edit</a>
-                            </td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="8" class="text-center py-4 text-muted">Belum ada order masuk.</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
+    <div class="bg-white px-4 py-2 rounded shadow text-sm">
+        📅 Hari ini: <span class="font-bold text-slate-800">{% now "d F Y" %}</span>
     </div>
 </div>
 
-</body>
-</html>
+<div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="bg-slate-50 text-slate-600 uppercase text-xs font-bold tracking-wider border-b border-gray-200">
+                    <th class="p-4">No. Order</th>
+                    <th class="p-4">Judul Buku</th>
+                    <th class="p-4">Pemesan</th>
+                    <th class="p-4">Deadline</th>
+                    <th class="p-4">Status Global</th>
+                    <th class="p-4 text-right">Harga</th>
+                    <th class="p-4 text-center">Aksi</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100 text-sm">
+                {% for order in orders %}
+                <tr class="hover:bg-gray-50 transition">
+                    <td class="p-4 font-mono font-bold text-blue-600">{{ order.nomor_order }}</td>
+                    <td class="p-4 font-semibold text-gray-800">{{ order.judul_buku }}</td>
+                    <td class="p-4 text-gray-600">{{ order.nama_pemesan }}</td>
+                    
+                    <td class="p-4">
+                        {% if order.deadline < now and order.status_global != 'SIAP' %}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                ⚠️ {{ order.deadline|date:"d M" }}
+                            </span>
+                        {% else %}
+                            <span class="text-gray-600">{{ order.deadline|date:"d M Y" }}</span>
+                        {% endif %}
+                    </td>
+
+                    <td class="p-4">
+                        {% if order.status_global == 'BARU' %}
+                            <span class="px-2 py-1 rounded text-xs font-bold bg-blue-100 text-blue-800">BARU</span>
+                        {% elif order.status_global == 'PROSES' %}
+                            <span class="px-2 py-1 rounded text-xs font-bold bg-yellow-100 text-yellow-800">PROSES</span>
+                        {% elif order.status_global == 'SIAP' %}
+                            <span class="px-2 py-1 rounded text-xs font-bold bg-green-100 text-green-800">SIAP</span>
+                        {% else %}
+                            <span class="px-2 py-1 rounded text-xs font-bold bg-gray-200 text-gray-600">BATAL</span>
+                        {% endif %}
+                    </td>
+
+                    <td class="p-4 text-right font-mono font-bold text-slate-700">
+                        Rp {{ order.total_harga }}
+                    </td>
+
+                    <td class="p-4 text-center">
+                        <a href="/admin/core_production/order/{{ order.id }}/change/" target="_blank" class="text-blue-600 hover:text-blue-900 font-medium text-xs">
+                            Edit Detail
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="p-8 text-center text-gray-400">Belum ada data order.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
