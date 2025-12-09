@@ -93,3 +93,33 @@ def dashboard_produksi(request):
 def logout_view(request):
     logout(request)
     return redirect('login')
+
+@login_required
+def update_production_status(request, workflow_id):
+    # Hanya orang produksi yang boleh akses
+    if not (request.user.is_superuser or request.user.groups.filter(name='Produksi').exists()):
+        return redirect('login')
+
+    if request.method == 'POST':
+        workflow = get_object_or_404(ProductionWorkflow, id=workflow_id)
+        
+        # Ambil jenis proses yang mau diupdate dari tombol yang diklik
+        process_type = request.POST.get('process_type') # cetak/binding/finishing
+        new_status = request.POST.get('new_status') # PROSES/SELESAI
+        
+        if process_type == 'cetak':
+            workflow.status_cetak = new_status
+        elif process_type == 'binding':
+            workflow.status_binding = new_status
+        elif process_type == 'finishing':
+            workflow.status_finishing = new_status
+            
+            # Jika finishing selesai, update juga status global Order jadi 'SIAP'
+            if new_status == 'SELESAI':
+                workflow.tanggal_selesai_produksi = timezone.now()
+                workflow.order.status_global = 'SIAP'
+                workflow.order.save()
+        
+        workflow.save()
+        
+    return redirect('dash_produksi')

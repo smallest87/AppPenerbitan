@@ -39,11 +39,28 @@ class Order(models.Model):
         return f"{self.nomor_order} - {self.judul_buku}"
 
 # --- 2. Tabel Spesifikasi ---
+# --- TAMBAHAN BARU: Pilihan Ukuran Buku Standar ---
+UKURAN_CHOICES = [
+    ('A5', 'A5 (14.8 x 21 cm) - Standar Buku Ajar/Novel'),
+    ('B5', 'B5 (17.6 x 25 cm) - Akademik/Jurnal'),
+    ('A4', 'A4 (21 x 29.7 cm) - Majalah/Modul'),
+    ('13x19', '13 x 19 cm - Novel Komersial/Fiksi'),
+    ('14x20', '14 x 20 cm - Standar Umum'),
+    ('15x23', '15.5 x 23 cm - Standar UNESCO'),
+    ('CUSTOM', 'Custom / Ukuran Khusus'),
+]
+
+# --- 2. Tabel Spesifikasi ---
 class BookSpecification(models.Model):
     order = models.OneToOneField(Order, on_delete=models.CASCADE, related_name='spesifikasi')
     
-    # Kita beri default agar Signal bisa membuatnya tanpa error
-    ukuran_buku = models.CharField(max_length=50, default='A5') 
+    # UPDATE DI SINI: Tambahkan choices=UKURAN_CHOICES
+    ukuran_buku = models.CharField(
+        max_length=20, 
+        choices=UKURAN_CHOICES, 
+        default='A5'
+    )
+    
     jenis_sampul = models.CharField(max_length=50, choices=[('SOFT', 'Softcover'), ('HARD', 'Hardcover')], default='SOFT')
     laminasi = models.CharField(max_length=50, choices=[('DOFF', 'Doff'), ('GLOSSY', 'Glossy')], default='DOFF')
     catatan_teknis = models.TextField(blank=True, help_text="Instruksi khusus untuk produksi")
