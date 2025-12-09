@@ -2,7 +2,8 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import views as auth_views
 from django.utils import timezone # Tambahan untuk logika warna deadline
-from .models import Order 
+from .models import Order, ProductionWorkflow # <--- Pastikan ProductionWorkflow di-import
+from .forms import PrePressForm # <--- IMPORT FORM YANG BARU DIBUAT
 
 # --- 1. Custom Login View ---
 class CustomLoginView(auth_views.LoginView):
@@ -38,7 +39,36 @@ def dashboard_admin(request):
 
 @login_required
 def dashboard_prepress(request):
-    return render(request, 'dashboard_prepress.html')
+    # Cek akses
+    if not (request.user.is_superuser or request.user.groups.filter(name='Pre-Press').exists()):
+        return redirect('login')
+    
+    # Tampilkan order yang belum selesai Layout/Desain-nya
+    # Kita filter yang status globalnya masih BARU atau PROSES
+    orders = Order.objects.filter(status_global__in=['BARU', 'PROSES']).order_by('-id')
+    
+    context = {
+        'orders': orders,
+        'user': request.user
+    }
+    return render(request, 'dashboard_prepress.html', context)
+
+@login_required
+def update_prepress(request, workflow_id):
+    # Ambil data workflow spesifik
+    workflow = get_object_or_404(ProductionWorkflow, id=workflow_id)
+    
+    if request.method == 'POST':
+        # Masukkan data dari form ke database
+        form = PrePressForm(request.POST, request.FILES, instance=workflow)
+        if form.is_valid():
+            form.save()
+            return redirect('dash_prepress') # Kembali ke dashboard setelah save
+    else:
+        # Jika baru buka halaman, tampilkan isian yang sekarang
+        form = PrePressForm(instance=workflow)
+
+    return render(request, 'form_prepress_update.html', {'form': form, 'order': workflow.order})
 
 @login_required
 def dashboard_produksi(request):
