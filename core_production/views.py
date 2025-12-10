@@ -1,5 +1,5 @@
 from .models import Order, ProductionWorkflow # <--- Pastikan ProductionWorkflow di-import
-from .forms import PrePressForm, StaffSignUpForm, OrderEditForm, BookSpecEditForm
+from .forms import PrePressForm, StaffSignUpForm, OrderEditForm, BookSpecEditForm, OrderCreateForm
 from django.utils import timezone # Tambahan untuk logika warna deadline
 from django.shortcuts import render, redirect, get_object_or_404
 from django.shortcuts import render, redirect
@@ -179,3 +179,21 @@ def edit_order_detail(request, order_id):
         'order': order
     }
     return render(request, 'edit_order.html', context)
+
+@login_required
+def create_order(request):
+    # Cek Permission
+    if not (request.user.is_superuser or request.user.groups.filter(name='Penerima Order').exists()):
+        return redirect('login')
+
+    if request.method == 'POST':
+        form = OrderCreateForm(request.POST)
+        if form.is_valid():
+            order = form.save()
+            # PENTING: Sinyal otomatis sudah membuatkan Spesifikasi & Workflow kosong.
+            # Kita langsung lempar user ke halaman EDIT untuk melengkapi data tersebut.
+            return redirect('edit_order', order_id=order.id)
+    else:
+        form = OrderCreateForm()
+
+    return render(request, 'create_order.html', {'form': form})

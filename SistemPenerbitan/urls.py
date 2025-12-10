@@ -11,7 +11,8 @@ from core_production.views import (
     logout_view,
     update_production_status,
     signup_view,
-    edit_order_detail
+    edit_order_detail,
+    create_order
 )
 
 urlpatterns = [
@@ -28,6 +29,8 @@ urlpatterns = [
     path('dashboard/produksi/update/<int:workflow_id>/', update_production_status, name='update_produksi'),
 
     path('signup/', signup_view, name='signup'),
+
+    path('order/create/', create_order, name='create_order'),
 
     path('order/edit/<int:order_id>/', edit_order_detail, name='edit_order'),
 ]
