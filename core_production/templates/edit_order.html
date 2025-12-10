@@ -3,57 +3,91 @@
 {% block title %}Edit Order {{ order.nomor_order }}{% endblock %}
 
 {% block content %}
-<div class="max-w-5xl mx-auto">
+<div class="max-w-6xl mx-auto pb-10">
     
     <div class="flex justify-between items-center mb-6">
         <div>
             <h2 class="text-2xl font-bold text-slate-800">Edit Detail Order</h2>
-            <p class="text-sm text-gray-500">Nomor Order: <span class="font-mono font-bold text-blue-600">{{ order.nomor_order }}</span></p>
+            <p class="text-sm text-gray-500">Nomor Order: <span class="font-mono font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded">{{ order.nomor_order }}</span></p>
         </div>
-        <a href="{% url 'dash_admin' %}" class="text-sm text-gray-500 hover:text-slate-800 font-bold">
-            &larr; Kembali
+        <a href="{% url 'dash_admin' %}" class="text-sm text-gray-500 hover:text-slate-800 font-bold flex items-center gap-1 transition">
+            <span>&larr;</span> Kembali ke Dashboard
         </a>
     </div>
 
-    <form method="post" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <form method="post" class="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {% csrf_token %}
 
-        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 h-fit">
-            <h3 class="text-lg font-bold text-slate-700 mb-4 border-b pb-2">📂 Informasi Pesanan</h3>
+        <div class="space-y-6">
             
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-xs font-bold text-gray-600 mb-1">Judul Buku</label>
-                    {{ form_order.judul_buku }}
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-gray-600 mb-1">Nama Pemesan</label>
-                    {{ form_order.nama_pemesan }}
-                </div>
-
-                <div class="grid grid-cols-2 gap-4">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                <h3 class="text-lg font-bold text-slate-700 mb-4 border-b pb-2 flex items-center gap-2">
+                    📂 Informasi Pesanan
+                </h3>
+                
+                <div class="space-y-4">
                     <div>
-                        <label class="block text-xs font-bold text-gray-600 mb-1">Deadline</label>
-                        {{ form_order.deadline }}
+                        <label class="block text-xs font-bold text-gray-600 mb-1">Judul Buku</label>
+                        {{ form_order.judul_buku }}
                     </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-600 mb-1">Status Global</label>
-                        {{ form_order.status_global }}
-                    </div>
-                </div>
 
-                <div class="bg-blue-50 p-3 rounded-lg border border-blue-100">
-                    <label class="block text-xs font-bold text-blue-800 mb-1">Total Harga (Rp)</label>
-                    {{ form_order.total_harga }}
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">Nama Pemesan</label>
+                        {{ form_order.nama_pemesan }}
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-600 mb-1">Deadline</label>
+                            {{ form_order.deadline }}
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-600 mb-1">Status Global</label>
+                            {{ form_order.status_global }}
+                        </div>
+                    </div>
                 </div>
             </div>
+
+            <div class="bg-slate-50 p-6 rounded-xl shadow-inner border border-slate-200">
+                <h3 class="text-lg font-bold text-slate-700 mb-4 border-b border-slate-200 pb-2 flex items-center gap-2">
+                    💰 Status Keuangan
+                </h3>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Total Harga (Rp)</label>
+                        {{ form_order.total_harga }}
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 mb-1">Status Pembayaran</label>
+                            {{ form_order.status_pembayaran }}
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 mb-1">Uang Masuk (Rp)</label>
+                            {{ form_order.jumlah_bayar }}
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between items-center pt-3 border-t border-slate-200 mt-2">
+                        <span class="text-sm text-gray-500 font-bold">Sisa Tagihan Klien:</span>
+                        <span class="text-lg font-mono font-bold {% if order.sisa_tagihan > 0 %}text-red-600{% else %}text-green-600{% endif %}">
+                            Rp {{ order.sisa_tagihan }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
         <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 h-fit">
-            <h3 class="text-lg font-bold text-slate-700 mb-4 border-b pb-2">⚙️ Spesifikasi Teknis</h3>
+            <h3 class="text-lg font-bold text-slate-700 mb-4 border-b pb-2 flex items-center gap-2">
+                ⚙️ Spesifikasi Teknis
+            </h3>
             
-            <div class="space-y-4">
+            <div class="space-y-5">
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-bold text-gray-600 mb-1">Ukuran Buku</label>
@@ -73,14 +107,15 @@
                 <div>
                     <label class="block text-xs font-bold text-gray-600 mb-1">Catatan Produksi</label>
                     {{ form_spec.catatan_teknis }}
-                    <p class="text-[10px] text-gray-400 mt-1">Tulis instruksi khusus untuk operator cetak.</p>
+                    <p class="text-[10px] text-gray-400 mt-1">Tulis instruksi khusus untuk operator cetak (misal: "Awas halaman 10 warna beda").</p>
                 </div>
             </div>
 
-            <div class="mt-8 pt-4 border-t border-gray-100">
-                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow-md transition transform hover:-translate-y-0.5">
-                    SIMPAN PERUBAHAN
+            <div class="mt-10 pt-6 border-t border-gray-100">
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-lg shadow-lg transition transform hover:-translate-y-0.5 text-sm uppercase tracking-wider">
+                    💾 Simpan Perubahan
                 </button>
+                <p class="text-center text-xs text-gray-400 mt-3">Perubahan data akan tercatat di Log Aktivitas.</p>
             </div>
         </div>
 

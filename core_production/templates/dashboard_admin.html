@@ -6,11 +6,10 @@
 <div class="mb-8 flex justify-between items-center">
     <div>
         <h2 class="text-3xl font-bold text-slate-800">Dashboard Order</h2>
-        <p class="text-gray-500">Pantau semua pesanan masuk dan status produksi.</p>
+        <p class="text-gray-500">Pantau semua pesanan masuk, keuangan, dan status produksi.</p>
     </div>
 
     <div class="flex items-center gap-4">
-        
         <div class="bg-white px-4 py-2 rounded shadow text-sm border border-slate-100 hidden md:block">
             📅 <span class="font-bold text-slate-800">{% now "d M Y" %}</span>
         </div>
@@ -21,7 +20,6 @@
             </svg>
             Input Order Baru
         </a>
-
     </div>
 </div>
 
@@ -35,20 +33,28 @@
                     <th class="p-4">Pemesan</th>
                     <th class="p-4">Deadline</th>
                     <th class="p-4">Status Global</th>
-                    <th class="p-4 text-right">Harga</th>
-                    <th class="p-4 text-center">Aksi</th>
+                    <th class="p-4 text-right">Keuangan</th> <th class="p-4 text-center">Aksi</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-100 text-sm">
                 {% for order in orders %}
                 <tr class="hover:bg-gray-50 transition">
-                    <td class="p-4 font-mono font-bold text-blue-600">{{ order.nomor_order }}</td>
-                    <td class="p-4 font-semibold text-gray-800">{{ order.judul_buku }}</td>
-                    <td class="p-4 text-gray-600">{{ order.nama_pemesan }}</td>
+                    
+                    <td class="p-4 font-mono font-bold text-blue-600">
+                        {{ order.nomor_order }}
+                    </td>
+                    
+                    <td class="p-4 font-semibold text-gray-800">
+                        {{ order.judul_buku }}
+                    </td>
+                    
+                    <td class="p-4 text-gray-600">
+                        {{ order.nama_pemesan }}
+                    </td>
                     
                     <td class="p-4">
                         {% if order.deadline < now and order.status_global != 'SIAP' %}
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 border border-red-200">
                                 ⚠️ {{ order.deadline|date:"d M" }}
                             </span>
                         {% else %}
@@ -58,39 +64,62 @@
 
                     <td class="p-4">
                         {% if order.status_global == 'BARU' %}
-                            <span class="px-2 py-1 rounded text-xs font-bold bg-blue-100 text-blue-800">BARU</span>
+                            <span class="px-2 py-1 rounded text-xs font-bold bg-blue-100 text-blue-800 border border-blue-200">BARU</span>
                         {% elif order.status_global == 'PROSES' %}
-                            <span class="px-2 py-1 rounded text-xs font-bold bg-yellow-100 text-yellow-800">PROSES</span>
+                            <span class="px-2 py-1 rounded text-xs font-bold bg-yellow-100 text-yellow-800 border border-yellow-200">PROSES</span>
                         {% elif order.status_global == 'SIAP' %}
-                            <span class="px-2 py-1 rounded text-xs font-bold bg-green-100 text-green-800">SIAP</span>
+                            <span class="px-2 py-1 rounded text-xs font-bold bg-green-100 text-green-800 border border-green-200">SIAP</span>
                         {% else %}
-                            <span class="px-2 py-1 rounded text-xs font-bold bg-gray-200 text-gray-600">BATAL</span>
+                            <span class="px-2 py-1 rounded text-xs font-bold bg-gray-200 text-gray-600 border border-gray-300">BATAL</span>
                         {% endif %}
                     </td>
 
-                    <td class="p-4 text-right font-mono font-bold text-slate-700">
-                        Rp {{ order.total_harga }}
+                    <td class="p-4 text-right">
+                        <div class="flex flex-col items-end gap-1">
+                            <span class="font-mono font-bold text-slate-700">Rp {{ order.total_harga }}</span>
+                            
+                            {% if order.status_pembayaran == 'LUNAS' %}
+                                <span class="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded font-bold border border-green-200">
+                                    ✅ LUNAS
+                                </span>
+                            {% elif order.status_pembayaran == 'DP' %}
+                                <span class="text-[10px] bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded font-bold border border-yellow-200">
+                                    ⚠️ DP: {{ order.jumlah_bayar }}
+                                </span>
+                                <span class="text-[10px] text-red-500 font-mono font-bold">
+                                    - {{ order.sisa_tagihan }}
+                                </span>
+                            {% else %}
+                                <span class="text-[10px] bg-red-100 text-red-700 px-2 py-0.5 rounded font-bold border border-red-200">
+                                    ❌ BELUM BAYAR
+                                </span>
+                            {% endif %}
+                        </div>
                     </td>
 
                     <td class="p-4 text-center">
-                        <div class="flex flex-col gap-2">
-                            <a href="{% url 'edit_order' order.id %}" class="text-blue-600 hover:text-blue-900 font-bold text-xs border border-blue-200 px-2 py-1 rounded">
-                                ✏️ Edit
+                        <div class="flex flex-col gap-2 items-center">
+                            <a href="{% url 'edit_order' order.id %}" class="text-blue-600 hover:text-blue-900 font-bold text-xs border border-blue-200 bg-blue-50 px-3 py-1 rounded w-full hover:bg-blue-100 transition">
+                                ✏️ Edit Detail
                             </a>
                             
-                            <a href="{% url 'print_spk' order.id %}" target="_blank" class="text-yellow-700 hover:text-yellow-900 font-bold text-xs border border-yellow-200 bg-yellow-50 px-2 py-1 rounded">
-                                🖨️ SPK
-                            </a>
-
-                            <a href="{% url 'print_invoice' order.id %}" target="_blank" class="text-green-700 hover:text-green-900 font-bold text-xs border border-green-200 bg-green-50 px-2 py-1 rounded">
-                                📄 Invoice
-                            </a>
+                            <div class="flex gap-1 w-full justify-center">
+                                <a href="{% url 'print_spk' order.id %}" target="_blank" class="text-amber-700 hover:text-amber-900 font-bold text-[10px] border border-amber-200 bg-amber-50 px-2 py-1 rounded flex-1 text-center hover:bg-amber-100 transition" title="Cetak SPK Produksi">
+                                    🖨️ SPK
+                                </a>
+                                <a href="{% url 'print_invoice' order.id %}" target="_blank" class="text-emerald-700 hover:text-emerald-900 font-bold text-[10px] border border-emerald-200 bg-emerald-50 px-2 py-1 rounded flex-1 text-center hover:bg-emerald-100 transition" title="Cetak Invoice Klien">
+                                    📄 INV
+                                </a>
+                            </div>
                         </div>
                     </td>
+
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="7" class="p-8 text-center text-gray-400">Belum ada data order.</td>
+                    <td colspan="7" class="p-10 text-center text-gray-400">
+                        Belum ada data order. Silakan input order baru.
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>

@@ -10,6 +10,10 @@ from django.contrib.auth import login
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+import datetime
+from django.db.models import Sum # Untuk hitung total
+import openpyxl # Untuk bikin excel
+from django.http import HttpResponse
 
 # --- 1. Custom Login View ---
 class CustomLoginView(auth_views.LoginView):
@@ -305,3 +309,82 @@ def print_invoice(request, order_id):
         'type': 'INVOICE'
     }
     return render_to_pdf('pdf/invoice_template.html', context)
+
+@login_required
+def laporan_bulanan(request):
+    if not request.user.is_superuser:
+        return redirect('dash_admin')
+
+    # 1. Ambil Parameter Bulan & Tahun (Default: Hari ini)
+    today = datetime.date.today()
+    bulan = int(request.GET.get('bulan', today.month))
+    tahun = int(request.GET.get('tahun', today.year))
+
+    # 2. Filter Order berdasarkan Deadline di bulan/tahun tersebut
+    orders = Order.objects.filter(deadline__month=bulan, deadline__year=tahun)
+
+    # 3. Hitung Ringkasan (Agregasi)
+    # aggregate mengembalikan dict, misal: {'total_omzet': 500000}
+    summary = orders.aggregate(
+        total_omzet=Sum('total_harga'),
+        total_masuk=Sum('jumlah_bayar')
+    )
+
+    # Handle jika tidak ada data (None) jadi 0
+    total_omzet = summary['total_omzet'] or 0
+    total_masuk = summary['total_masuk'] or 0
+    total_piutang = total_omzet - total_masuk
+
+    context = {
+        'orders': orders,
+        'bulan': bulan,
+        'tahun': tahun,
+        'total_omzet': total_omzet,
+        'total_masuk': total_masuk,
+        'total_piutang': total_piutang,
+        # Kirim range tahun untuk dropdown (misal 3 tahun ke belakang)
+        'year_range': range(today.year - 2, today.year + 2), 
+    }
+    return render(request, 'laporan_bulanan.html', context)
+
+@login_required
+def export_excel(request):
+    if not request.user.is_superuser:
+        return redirect('dash_admin')
+
+    # Ambil filter dari URL juga
+    today = datetime.date.today()
+    bulan = int(request.GET.get('bulan', today.month))
+    tahun = int(request.GET.get('tahun', today.year))
+
+    # Query Data
+    orders = Order.objects.filter(deadline__month=bulan, deadline__year=tahun)
+
+    # 1. Buat Workbook Excel Baru
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = f"Laporan {bulan}-{tahun}"
+
+    # 2. Buat Header Kolom
+    headers = ['No. Order', 'Judul Buku', 'Pemesan', 'Deadline', 'Status', 'Total Harga', 'Sudah Bayar', 'Sisa Tagihan']
+    ws.append(headers)
+
+    # 3. Isi Data
+    for order in orders:
+        ws.append([
+            order.nomor_order,
+            order.judul_buku,
+            order.nama_pemesan,
+            order.deadline,
+            order.get_status_global_display(),
+            order.total_harga,
+            order.jumlah_bayar,
+            order.sisa_tagihan # Property ini otomatis dihitung
+        ])
+
+    # 4. Siapkan Response Download
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = f'attachment; filename=Laporan_PublisherPro_{bulan}_{tahun}.xlsx'
+    
+    wb.save(response)
+    return response

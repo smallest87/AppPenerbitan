@@ -24,16 +24,32 @@ STATUS_PRODUKSI = [
     ('SELESAI', 'Selesai'),
 ]
 
+# Tambahkan Pilihan Status Bayar
+STATUS_BAYAR = [
+    ('BELUM', '❌ Belum Bayar'),
+    ('DP', '⚠️ Down Payment (DP)'),
+    ('LUNAS', '✅ Lunas'),
+]
+
 # --- 1. Tabel Utama: Order ---
 class Order(models.Model):
     nomor_order = models.CharField(max_length=20, unique=True, help_text="Contoh: PO-001")
     judul_buku = models.CharField(max_length=255)
     nama_pemesan = models.CharField(max_length=100)
     deadline = models.DateField()
-    
-    # Status Utama & Keuangan
     status_global = models.CharField(max_length=10, choices=STATUS_GLOBAL, default='BARU')
+    
+    # --- UPDATE SEKTOR KEUANGAN ---
     total_harga = models.DecimalField(max_digits=12, decimal_places=0, default=0)
+    
+    # Kolom Baru:
+    status_pembayaran = models.CharField(max_length=10, choices=STATUS_BAYAR, default='BELUM')
+    jumlah_bayar = models.DecimalField(max_digits=12, decimal_places=0, default=0, help_text="Total uang yang sudah diterima")
+
+    # Logika Hitung Sisa (Virtual Field)
+    @property
+    def sisa_tagihan(self):
+        return self.total_harga - self.jumlah_bayar
 
     def __str__(self):
         return f"{self.nomor_order} - {self.judul_buku}"
@@ -140,3 +156,4 @@ class SystemLog(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.aktivitas}"
+    

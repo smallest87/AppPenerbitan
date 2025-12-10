@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% block title %}Laporan Keuangan{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+    
+    <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+        <div>
+            <h2 class="text-3xl font-bold text-slate-800">📊 Laporan Bulanan</h2>
+            <p class="text-gray-500">Rekapitulasi order berdasarkan bulan deadline.</p>
+        </div>
+
+        <form method="get" class="bg-white p-2 rounded shadow-sm border border-gray-200 flex gap-2">
+            <select name="bulan" class="border-none focus:ring-0 text-sm font-bold text-slate-700 bg-transparent cursor-pointer">
+                <option value="1" {% if bulan == 1 %}selected{% endif %}>Januari</option>
+                <option value="2" {% if bulan == 2 %}selected{% endif %}>Februari</option>
+                <option value="3" {% if bulan == 3 %}selected{% endif %}>Maret</option>
+                <option value="4" {% if bulan == 4 %}selected{% endif %}>April</option>
+                <option value="5" {% if bulan == 5 %}selected{% endif %}>Mei</option>
+                <option value="6" {% if bulan == 6 %}selected{% endif %}>Juni</option>
+                <option value="7" {% if bulan == 7 %}selected{% endif %}>Juli</option>
+                <option value="8" {% if bulan == 8 %}selected{% endif %}>Agustus</option>
+                <option value="9" {% if bulan == 9 %}selected{% endif %}>September</option>
+                <option value="10" {% if bulan == 10 %}selected{% endif %}>Oktober</option>
+                <option value="11" {% if bulan == 11 %}selected{% endif %}>November</option>
+                <option value="12" {% if bulan == 12 %}selected{% endif %}>Desember</option>
+            </select>
+            
+            <select name="tahun" class="border-l border-gray-200 pl-2 focus:ring-0 text-sm font-bold text-slate-700 bg-transparent cursor-pointer">
+                {% for y in year_range %}
+                <option value="{{ y }}" {% if tahun == y %}selected{% endif %}>{{ y }}</option>
+                {% endfor %}
+            </select>
+
+            <button type="submit" class="bg-slate-800 text-white px-4 py-1 rounded text-sm font-bold hover:bg-slate-700">
+                Filter
+            </button>
+        </form>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-blue-100">
+            <p class="text-xs font-bold text-blue-500 uppercase tracking-wider">Total Omzet (Nilai Proyek)</p>
+            <h3 class="text-2xl font-bold text-slate-800 mt-2">Rp {{ total_omzet }}</h3>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-green-100">
+            <p class="text-xs font-bold text-green-500 uppercase tracking-wider">Total Uang Masuk (Cash)</p>
+            <h3 class="text-2xl font-bold text-slate-800 mt-2">Rp {{ total_masuk }}</h3>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-red-100">
+            <p class="text-xs font-bold text-red-500 uppercase tracking-wider">Piutang / Belum Bayar</p>
+            <h3 class="text-2xl font-bold text-red-600 mt-2">Rp {{ total_piutang }}</h3>
+            <p class="text-xs text-gray-400 mt-1">Harap segera ditagih.</p>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow border border-gray-200 overflow-hidden">
+        <div class="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+            <h3 class="font-bold text-slate-700">Rincian Order</h3>
+            
+            <a href="{% url 'export_excel' %}?bulan={{ bulan }}&tahun={{ tahun }}" class="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white text-xs font-bold px-3 py-2 rounded shadow transition">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                Download Excel (.xlsx)
+            </a>
+        </div>
+
+        <table class="w-full text-left text-sm">
+            <thead class="bg-white text-gray-500 border-b border-gray-100">
+                <tr>
+                    <th class="p-4 font-medium">No. Order</th>
+                    <th class="p-4 font-medium">Judul Buku</th>
+                    <th class="p-4 font-medium">Deadline</th>
+                    <th class="p-4 font-medium text-right">Total Harga</th>
+                    <th class="p-4 font-medium text-right">Sudah Bayar</th>
+                    <th class="p-4 font-medium text-right">Sisa</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                {% for order in orders %}
+                <tr class="hover:bg-gray-50">
+                    <td class="p-4 font-bold text-blue-600">{{ order.nomor_order }}</td>
+                    <td class="p-4 text-gray-700">{{ order.judul_buku }}</td>
+                    <td class="p-4 text-gray-500">{{ order.deadline|date:"d M Y" }}</td>
+                    <td class="p-4 text-right font-mono">Rp {{ order.total_harga }}</td>
+                    <td class="p-4 text-right font-mono text-green-600">Rp {{ order.jumlah_bayar }}</td>
+                    <td class="p-4 text-right font-mono font-bold {% if order.sisa_tagihan > 0 %}text-red-500{% else %}text-gray-300{% endif %}">
+                        {{ order.sisa_tagihan }}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="p-8 text-center text-gray-400">Tidak ada data order di bulan ini.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+{% endblock %}

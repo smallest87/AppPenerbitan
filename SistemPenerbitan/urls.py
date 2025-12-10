@@ -19,7 +19,9 @@ from core_production.views import (
     edit_user,              # Fitur Edit User
     view_system_logs,        # Fitur Lihat Log Sistem
     print_spk,              # Fitur Cetak SPK
-    print_invoice          # Fitur Cetak Invoice
+    print_invoice,          # Fitur Cetak Invoice
+    laporan_bulanan,        # Fitur Laporan Bulanan
+    export_excel,           # Fitur Export Excel
 )
 
 urlpatterns = [
@@ -52,6 +54,9 @@ urlpatterns = [
 
     path('order/print/spk/<int:order_id>/', print_spk, name='print_spk'),
     path('order/print/invoice/<int:order_id>/', print_invoice, name='print_invoice'),
+
+    path('laporan/', laporan_bulanan, name='laporan_bulanan'),
+    path('laporan/export/', export_excel, name='export_excel'),
 ]
 
 # Konfigurasi agar file upload (Media) bisa dibuka di browser

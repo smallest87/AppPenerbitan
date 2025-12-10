@@ -53,9 +53,10 @@ class StaffSignUpForm(UserCreationForm):
 class OrderEditForm(forms.ModelForm):
     class Meta:
         model = Order
-        fields = ['judul_buku', 'nama_pemesan', 'deadline', 'total_harga', 'status_global']
+        # Tambahkan 'status_pembayaran' dan 'jumlah_bayar' ke dalam fields
+        fields = ['judul_buku', 'nama_pemesan', 'deadline', 'total_harga', 'status_global', 'status_pembayaran', 'jumlah_bayar']
         widgets = {
-            'deadline': forms.DateInput(attrs={'type': 'date'}), # Agar muncul kalender
+            'deadline': forms.DateInput(attrs={'type': 'date'}),
         }
 
     def __init__(self, *args, **kwargs):
