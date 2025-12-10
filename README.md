@@ -1,10 +1,3 @@
-Tentu, ini adalah draft file `README.md` yang profesional, lengkap dengan dokumentasi fitur, cara instalasi lokal, dan panduan deployment ke server produksi (VPS/Cloud).
-
-Anda bisa menyalin teks di bawah ini dan menyimpannya sebagai file bernama **`README.md`** di folder root proyek Anda.
-
------
-
-````markdown
 # PublisherPro - Sistem Manajemen Penerbitan Buku 📚
 
 **PublisherPro** adalah aplikasi web terintegrasi berbasis Python/Django yang dirancang untuk mengelola alur kerja perusahaan penerbitan buku. Aplikasi ini menghubungkan Divisi Penerima Order, Studio Desain (Pre-Press), dan Lantai Produksi (Cetak/Finishing) dalam satu platform yang efisien dan aman.
@@ -220,19 +213,3 @@ Pull request dipersilakan. Untuk perubahan besar, harap buka issue terlebih dahu
 ## 📄 Lisensi
 
 [MIT](https://choosealicense.com/licenses/mit/)
-
-````
-
----
-
-### Tips Tambahan untuk Anda:
-
-Agar file `README.md` ini valid dan orang lain bisa menginstalnya, Anda perlu membuat file **`requirements.txt`**.
-
-Caranya, buka terminal di folder proyek Anda (local), lalu ketik:
-
-```bash
-pip freeze > requirements.txt
-````
-
-Ini akan mencatat semua library (Django, Pillow, dll) yang terinstal di komputer Anda ke dalam satu file teks, sehingga server atau developer lain bisa menginstalnya dengan mudah.
