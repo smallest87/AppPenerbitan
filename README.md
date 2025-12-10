@@ -13,7 +13,6 @@
 **PublisherPro** adalah aplikasi web terintegrasi berbasis Python/Django yang dirancang untuk mengelola alur kerja perusahaan penerbitan buku. Aplikasi ini menghubungkan Divisi Penerima Order, Studio Desain (Pre-Press), dan Lantai Produksi (Cetak/Finishing) dalam satu platform yang efisien dan aman.
 
 ![Dashboard Preview](docs/dashboard_preview.png)
-*(Ganti link ini dengan screenshot aplikasi Anda nanti)*
 
 ## ✨ Fitur Utama
 
