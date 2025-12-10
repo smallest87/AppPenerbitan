@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <title>Tambah Karyawan - Publisher Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style> body { font-family: 'Inter', sans-serif; } </style>
+</head>
+<body class="bg-white h-screen overflow-hidden">
+
+    <div class="flex h-full w-full">
+        
+        <div class="hidden md:flex w-1/2 bg-slate-900 relative justify-center items-center overflow-hidden">
+            <div class="absolute -top-20 -left-20 w-80 h-80 bg-blue-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
+            <div class="absolute -bottom-20 -right-20 w-80 h-80 bg-indigo-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+
+            <div class="relative z-10 text-center px-10">
+                <h1 class="text-5xl font-bold text-white mb-4 tracking-tight">Publisher<span class="text-blue-500">Pro</span></h1>
+                <p class="text-slate-300 text-lg font-light leading-relaxed">
+                    Sistem Manajemen Penerbitan Buku Terintegrasi.<br>
+                    Kelola naskah, desain, hingga produksi dalam satu pintu.
+                </p>
+                <div class="mt-8">
+                    <span class="px-4 py-2 rounded-full bg-slate-800 text-slate-400 text-sm border border-slate-700">
+                        Admin Area: Manajemen User
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="w-full md:w-1/2 bg-white h-full overflow-y-auto">
+            
+            <div class="min-h-full w-full flex flex-col justify-center items-center p-8 py-12">
+                
+                <div class="w-full max-w-md">
+                    <div class="md:hidden text-center mb-8">
+                        <h1 class="text-3xl font-bold text-slate-800">Publisher<span class="text-blue-600">Pro</span></h1>
+                    </div>
+
+                    <div class="text-left mb-8">
+                        <h2 class="text-2xl font-bold text-slate-900">Tambah Karyawan</h2>
+                        <p class="text-gray-500 text-sm mt-1">Buatkan akun untuk staff Pre-Press atau Produksi.</p>
+                    </div>
+
+                    <form method="post" class="space-y-5">
+                        {% csrf_token %}
+                        
+                        {% if form.non_field_errors %}
+                        <div class="bg-red-50 text-red-600 p-4 rounded-lg text-sm border border-red-200 mb-4">
+                            {% for error in form.non_field_errors %}
+                                <div class="flex items-center gap-2">⚠️ {{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
+                        {% for field in form %}
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">
+                                {{ field.label }}
+                                {% if field.field.required %}<span class="text-red-500">*</span>{% endif %}
+                            </label>
+                            
+                            {{ field }}
+
+                            {% if field.errors %}
+                                <p class="text-red-500 text-xs mt-1 font-medium">{{ field.errors.0 }}</p>
+                            {% endif %}
+                            
+                            {% if field.help_text %}
+                                <p class="text-gray-400 text-xs mt-1">{{ field.help_text }}</p>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+
+                        <div class="pt-4">
+                            <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 rounded-lg transition duration-300 shadow-lg transform hover:-translate-y-0.5">
+                                SIMPAN DATA KARYAWAN
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <div class="text-center mt-6">
+                        <a href="{% url 'dash_admin' %}" class="text-gray-500 hover:text-slate-800 text-sm font-bold flex items-center justify-center gap-2 transition">
+                            <span>←</span> Batal / Kembali ke Dashboard
+                        </a>
+                    </div>
+
+                    <div class="mt-10 text-xs text-gray-400 text-center pb-4">
+                        &copy; 2025 Publisher Pro System. Hak Cipta Dilindungi.
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

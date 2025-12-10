@@ -9,7 +9,8 @@ from core_production.views import (
     dashboard_produksi,
     update_prepress,
     logout_view,
-    update_production_status # <--- Kita akan buat fungsi ini sebentar lagi
+    update_production_status,
+    signup_view
 )
 
 urlpatterns = [
@@ -24,6 +25,8 @@ urlpatterns = [
     path('dashboard/produksi/', dashboard_produksi, name='dash_produksi'),
     # URL Baru untuk Operator klik tombol update
     path('dashboard/produksi/update/<int:workflow_id>/', update_production_status, name='update_produksi'),
+
+    path('signup/', signup_view, name='signup'),
 ]
 
 # Tambahkan baris ajaib ini agar file upload bisa dibuka di browser

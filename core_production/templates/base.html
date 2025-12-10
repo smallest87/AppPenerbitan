@@ -28,6 +28,12 @@
                 <a href="/admin/core_production/order/add/" target="_blank" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-slate-700 hover:text-white">
                     ➕ Input Order Baru
                 </a>
+
+                    {% if user.is_superuser %}
+                    <a href="{% url 'signup' %}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-slate-700 hover:text-white text-yellow-400">
+                        👤 Tambah Staff Baru
+                    </a>
+                    {% endif %}
                 {% endif %}
 
                 {% if 'Pre-Press' in user.groups.all.0.name %}

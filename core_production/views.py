@@ -1,12 +1,13 @@
-from django.shortcuts import render, redirect, get_object_or_404
-
-from django.contrib.auth import logout # <--- TAMBAHAN PENTING
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth import views as auth_views
-from django.utils import timezone # Tambahan untuk logika warna deadline
 from .models import Order, ProductionWorkflow # <--- Pastikan ProductionWorkflow di-import
-from .forms import PrePressForm # <--- IMPORT FORM YANG BARU DIBUAT
+from .forms import PrePressForm, StaffSignUpForm # <--- IMPORT FORM YANG BARU DIBUAT
+from django.utils import timezone # Tambahan untuk logika warna deadline
+from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.contrib.auth import logout
+from django.contrib.auth import login
+from django.contrib.auth import views as auth_views
+from django.contrib.auth.decorators import login_required
 
 # --- 1. Custom Login View ---
 class CustomLoginView(auth_views.LoginView):
@@ -123,3 +124,26 @@ def update_production_status(request, workflow_id):
         workflow.save()
         
     return redirect('dash_produksi')
+
+@login_required # <--- Wajib login dulu
+def signup_view(request):
+    # HANYA SUPERUSER YANG BOLEH AKSES
+    if not request.user.is_superuser:
+        return redirect('login') # Atau redirect ke dashboard mereka sendiri
+
+    if request.method == 'POST':
+        form = StaffSignUpForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            
+            # --- PERUBAHAN DI SINI ---
+            # KITA HAPUS: login(request, user)  <-- Hapus ini agar Admin tidak ter-logout
+            
+            # Beri notifikasi sukses (Opsional, tapi bagus)
+            # messages.success(request, f"Staff {user.username} berhasil ditambahkan!")
+            
+            return redirect('dash_admin') # Kembali ke Dashboard Admin setelah buat akun
+    else:
+        form = StaffSignUpForm()
+    
+    return render(request, 'signup.html', {'form': form})
