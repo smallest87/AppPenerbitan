@@ -1,0 +1,86 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <style>
+        body { font-family: Helvetica, sans-serif; font-size: 12px; }
+        .header { text-align: center; margin-bottom: 20px; border-bottom: 2px solid black; padding-bottom: 10px; }
+        .title { font-size: 18px; font-weight: bold; }
+        .subtitle { font-size: 10px; color: #555; }
+        
+        .info-box { width: 100%; margin-bottom: 20px; }
+        .info-box td { padding: 5px; }
+        .label { font-weight: bold; width: 120px; }
+
+        .spec-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        .spec-table th, .spec-table td { border: 1px solid #000; padding: 8px; text-align: left; }
+        .spec-table th { background-color: #eee; }
+
+        .checklist { width: 100%; margin-top: 30px; }
+        .box { border: 1px solid #000; height: 100px; width: 30%; display: inline-block; margin-right: 10px; padding: 10px; }
+        .box-title { font-weight: bold; border-bottom: 1px solid #ccc; margin-bottom: 5px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="title">SURAT PERINTAH KERJA (SPK)</div>
+        <div class="subtitle">PublisherPro Production Division</div>
+    </div>
+
+    <table class="info-box">
+        <tr>
+            <td class="label">NOMOR ORDER</td>
+            <td>: <strong>{{ order.nomor_order }}</strong></td>
+            <td class="label">DEADLINE</td>
+            <td>: <span style="color:red">{{ order.deadline|date:"d M Y" }}</span></td>
+        </tr>
+        <tr>
+            <td class="label">JUDUL BUKU</td>
+            <td>: {{ order.judul_buku }}</td>
+            <td class="label">PEMESAN</td>
+            <td>: {{ order.nama_pemesan }}</td>
+        </tr>
+    </table>
+
+    <div style="background-color: #000; color: #fff; padding: 5px; font-weight: bold;">SPESIFIKASI TEKNIS</div>
+    <table class="spec-table">
+        <tr>
+            <th>Ukuran Buku</th>
+            <td>{{ order.spesifikasi.ukuran_buku }}</td>
+        </tr>
+        <tr>
+            <th>Jenis Sampul</th>
+            <td>{{ order.spesifikasi.get_jenis_sampul_display }}</td>
+        </tr>
+        <tr>
+            <th>Laminasi</th>
+            <td>{{ order.spesifikasi.get_laminasi_display }}</td>
+        </tr>
+        <tr>
+            <th>Catatan Produksi</th>
+            <td>{{ order.spesifikasi.catatan_teknis|default:"-" }}</td>
+        </tr>
+    </table>
+
+    <table class="checklist">
+        <tr>
+            <td width="33%" style="border: 1px solid black; padding: 10px; height: 80px;">
+                <div class="box-title">1. CETAK ISI</div>
+                <br><br>Paraf: ________
+            </td>
+            <td width="33%" style="border: 1px solid black; padding: 10px; height: 80px;">
+                <div class="box-title">2. JILID / BINDING</div>
+                <br><br>Paraf: ________
+            </td>
+            <td width="33%" style="border: 1px solid black; padding: 10px; height: 80px;">
+                <div class="box-title">3. FINISHING / PACKING</div>
+                <br><br>Paraf: ________
+            </td>
+        </tr>
+    </table>
+
+    <div style="margin-top: 30px; font-size: 10px;">
+        * Dokumen ini diterbitkan otomatis oleh sistem pada {% now "d M Y H:i" %}.<br>
+        * Harap dikembalikan ke Admin setelah produksi selesai.
+    </div>
+</body>
+</html>

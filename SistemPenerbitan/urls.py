@@ -17,7 +17,9 @@ from core_production.views import (
     update_production_status, # Fitur Update Operator
     manage_users,           # Fitur Kelola User
     edit_user,              # Fitur Edit User
-    view_system_logs        # Fitur Lihat Log Sistem
+    view_system_logs,        # Fitur Lihat Log Sistem
+    print_spk,              # Fitur Cetak SPK
+    print_invoice          # Fitur Cetak Invoice
 )
 
 urlpatterns = [
@@ -47,6 +49,9 @@ urlpatterns = [
     path('users/edit/<int:user_id>/', edit_user, name='edit_user'),
 
     path('logs/', view_system_logs, name='system_logs'),
+
+    path('order/print/spk/<int:order_id>/', print_spk, name='print_spk'),
+    path('order/print/invoice/<int:order_id>/', print_invoice, name='print_invoice'),
 ]
 
 # Konfigurasi agar file upload (Media) bisa dibuka di browser

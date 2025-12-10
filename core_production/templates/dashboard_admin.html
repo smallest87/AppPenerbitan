@@ -73,9 +73,19 @@
                     </td>
 
                     <td class="p-4 text-center">
-                        <a href="{% url 'edit_order' order.id %}" class="text-blue-600 hover:text-blue-900 font-medium text-xs bg-blue-50 px-3 py-1 rounded border border-blue-200">
-                            ✏️ Edit Detail
-                        </a>
+                        <div class="flex flex-col gap-2">
+                            <a href="{% url 'edit_order' order.id %}" class="text-blue-600 hover:text-blue-900 font-bold text-xs border border-blue-200 px-2 py-1 rounded">
+                                ✏️ Edit
+                            </a>
+                            
+                            <a href="{% url 'print_spk' order.id %}" target="_blank" class="text-yellow-700 hover:text-yellow-900 font-bold text-xs border border-yellow-200 bg-yellow-50 px-2 py-1 rounded">
+                                🖨️ SPK
+                            </a>
+
+                            <a href="{% url 'print_invoice' order.id %}" target="_blank" class="text-green-700 hover:text-green-900 font-bold text-xs border border-green-200 bg-green-50 px-2 py-1 rounded">
+                                📄 Invoice
+                            </a>
+                        </div>
                     </td>
                 </tr>
                 {% empty %}

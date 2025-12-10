@@ -1,0 +1,77 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <style>
+        body { font-family: Helvetica, sans-serif; font-size: 12px; }
+        .header { text-align: right; margin-bottom: 30px; }
+        .company-name { font-size: 20px; font-weight: bold; color: #2c3e50; }
+        
+        .invoice-title { font-size: 24px; font-weight: bold; margin-bottom: 20px; border-bottom: 2px solid #2c3e50; }
+        
+        .client-info { margin-bottom: 30px; }
+        
+        .price-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        .price-table th { background-color: #2c3e50; color: white; padding: 10px; text-align: left; }
+        .price-table td { border-bottom: 1px solid #ddd; padding: 10px; }
+        
+        .total-row td { font-size: 14px; font-weight: bold; color: #2c3e50; background-color: #f8f9fa; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="company-name">PublisherPro Studio</div>
+        <div>Jl. Percetakan Negara No. 1, Jakarta</div>
+        <div>Telp: (021) 555-0000</div>
+    </div>
+
+    <div class="invoice-title">INVOICE</div>
+
+    <table width="100%" class="client-info">
+        <tr>
+            <td width="50%">
+                <strong>DITAGIHKAN KEPADA:</strong><br>
+                {{ order.nama_pemesan }}<br>
+                (Client ID: GUEST)
+            </td>
+            <td width="50%" style="text-align: right;">
+                <strong>NO. INVOICE:</strong> INV/{{ order.nomor_order }}<br>
+                <strong>TANGGAL:</strong> {% now "d M Y" %}<br>
+                <strong>JATUH TEMPO:</strong> {{ order.deadline|date:"d M Y" }}
+            </td>
+        </tr>
+    </table>
+
+    <table class="price-table">
+        <thead>
+            <tr>
+                <th width="60%">DESKRIPSI PEKERJAAN</th>
+                <th width="40%" style="text-align: right;">JUMLAH (IDR)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <strong>Cetak Buku: {{ order.judul_buku }}</strong><br>
+                    <small>
+                        Spek: {{ order.spesifikasi.ukuran_buku }}, 
+                        {{ order.spesifikasi.get_jenis_sampul_display }}, 
+                        {{ order.spesifikasi.get_laminasi_display }}
+                    </small>
+                </td>
+                <td style="text-align: right;">{{ order.total_harga }}</td>
+            </tr>
+            <tr class="total-row">
+                <td style="text-align: right;">TOTAL TAGIHAN</td>
+                <td style="text-align: right;">Rp {{ order.total_harga }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div style="margin-top: 40px;">
+        <strong>Instruksi Pembayaran:</strong><br>
+        Silakan transfer ke Bank BCA<br>
+        No. Rek: 123-456-7890<br>
+        A.n. PT Penerbitan Maju Jaya
+    </div>
+</body>
+</html>

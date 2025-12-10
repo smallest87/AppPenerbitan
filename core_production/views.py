@@ -1,5 +1,6 @@
 from .forms import PrePressForm, StaffSignUpForm, OrderEditForm, BookSpecEditForm, OrderCreateForm, UserEditForm, UserProfileForm
 from .models import Order, UserProfile, ProductionWorkflow, SystemLog # <--- Pastikan ProductionWorkflow di-import
+from .utils import render_to_pdf
 from django.utils import timezone # Tambahan untuk logika warna deadline
 from django.shortcuts import render, redirect, get_object_or_404
 from django.shortcuts import render, redirect
@@ -280,3 +281,27 @@ def view_system_logs(request):
     logs = SystemLog.objects.select_related('user').all().order_by('-waktu')[:100]
     
     return render(request, 'system_log.html', {'logs': logs})
+
+@login_required
+def print_spk(request, order_id):
+    # SPK = Surat Perintah Kerja (Untuk Internal)
+    # Tidak boleh ada harga di sini
+    order = get_object_or_404(Order, id=order_id)
+    
+    context = {
+        'order': order,
+        'type': 'SPK'
+    }
+    return render_to_pdf('pdf/spk_template.html', context)
+
+@login_required
+def print_invoice(request, order_id):
+    # Invoice = Tagihan (Untuk Eksternal/Klien)
+    # Harus ada detail harga
+    order = get_object_or_404(Order, id=order_id)
+    
+    context = {
+        'order': order,
+        'type': 'INVOICE'
+    }
+    return render_to_pdf('pdf/invoice_template.html', context)
