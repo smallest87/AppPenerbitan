@@ -61,8 +61,8 @@
                     </td>
 
                     <td class="p-4 text-center">
-                        <a href="/admin/core_production/order/{{ order.id }}/change/" target="_blank" class="text-blue-600 hover:text-blue-900 font-medium text-xs">
-                            Edit Detail
+                        <a href="{% url 'edit_order' order.id %}" class="text-blue-600 hover:text-blue-900 font-medium text-xs bg-blue-50 px-3 py-1 rounded border border-blue-200">
+                            ✏️ Edit Detail
                         </a>
                     </td>
                 </tr>

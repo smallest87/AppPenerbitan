@@ -10,7 +10,8 @@ from core_production.views import (
     update_prepress,
     logout_view,
     update_production_status,
-    signup_view
+    signup_view,
+    edit_order_detail
 )
 
 urlpatterns = [
@@ -27,6 +28,8 @@ urlpatterns = [
     path('dashboard/produksi/update/<int:workflow_id>/', update_production_status, name='update_produksi'),
 
     path('signup/', signup_view, name='signup'),
+
+    path('order/edit/<int:order_id>/', edit_order_detail, name='edit_order'),
 ]
 
 # Tambahkan baris ajaib ini agar file upload bisa dibuka di browser

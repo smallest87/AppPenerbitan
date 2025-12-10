@@ -1,5 +1,5 @@
 from django import forms
-from .models import ProductionWorkflow
+from .models import ProductionWorkflow, Order, BookSpecification
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User, Group
 
@@ -48,3 +48,31 @@ class StaffSignUpForm(UserCreationForm):
             user.is_staff = True 
             user.save()
         return user
+    
+# Form untuk Edit Data Utama Order
+class OrderEditForm(forms.ModelForm):
+    class Meta:
+        model = Order
+        fields = ['judul_buku', 'nama_pemesan', 'deadline', 'total_harga', 'status_global']
+        widgets = {
+            'deadline': forms.DateInput(attrs={'type': 'date'}), # Agar muncul kalender
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs['class'] = 'w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm'
+
+# Form untuk Edit Spesifikasi Buku
+class BookSpecEditForm(forms.ModelForm):
+    class Meta:
+        model = BookSpecification
+        fields = ['ukuran_buku', 'jenis_sampul', 'laminasi', 'catatan_teknis']
+        widgets = {
+            'catatan_teknis': forms.Textarea(attrs={'rows': 4}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs['class'] = 'w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm'

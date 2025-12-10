@@ -1,5 +1,5 @@
 from .models import Order, ProductionWorkflow # <--- Pastikan ProductionWorkflow di-import
-from .forms import PrePressForm, StaffSignUpForm # <--- IMPORT FORM YANG BARU DIBUAT
+from .forms import PrePressForm, StaffSignUpForm, OrderEditForm, BookSpecEditForm
 from django.utils import timezone # Tambahan untuk logika warna deadline
 from django.shortcuts import render, redirect, get_object_or_404
 from django.shortcuts import render, redirect
@@ -147,3 +147,35 @@ def signup_view(request):
         form = StaffSignUpForm()
     
     return render(request, 'signup.html', {'form': form})
+
+@login_required
+def edit_order_detail(request, order_id):
+    # 1. Cek Permission (Hanya Admin/Penerima Order)
+    if not (request.user.is_superuser or request.user.groups.filter(name='Penerima Order').exists()):
+        return redirect('login')
+
+    # 2. Ambil Data
+    order = get_object_or_404(Order, id=order_id)
+    # Gunakan 'related_name' spesifikasi dari models.py
+    spec = order.spesifikasi 
+
+    if request.method == 'POST':
+        # Masukkan data POST ke kedua form
+        form_order = OrderEditForm(request.POST, instance=order)
+        form_spec = BookSpecEditForm(request.POST, instance=spec)
+
+        if form_order.is_valid() and form_spec.is_valid():
+            form_order.save()
+            form_spec.save()
+            return redirect('dash_admin') # Kembali ke dashboard setelah save
+    else:
+        # Isi form dengan data yang sudah ada
+        form_order = OrderEditForm(instance=order)
+        form_spec = BookSpecEditForm(instance=spec)
+
+    context = {
+        'form_order': form_order,
+        'form_spec': form_spec,
+        'order': order
+    }
+    return render(request, 'edit_order.html', context)
