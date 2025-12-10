@@ -1,5 +1,7 @@
 # PublisherPro - Sistem Manajemen Penerbitan Buku 📚
 
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/smallest87/AppPenerbitan?style=for-the-badge&color=blue)
+
 **PublisherPro** adalah aplikasi web terintegrasi berbasis Python/Django yang dirancang untuk mengelola alur kerja perusahaan penerbitan buku. Aplikasi ini menghubungkan Divisi Penerima Order, Studio Desain (Pre-Press), dan Lantai Produksi (Cetak/Finishing) dalam satu platform yang efisien dan aman.
 
 ![Dashboard Preview](docs/dashboard_preview.png)
